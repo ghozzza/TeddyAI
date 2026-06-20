@@ -13,3 +13,9 @@ yarn-error.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# local-only scratch / drafts
+/draft
+
+# agent decision log (runtime data)
+/data
