@@ -1,40 +1,78 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Neobrutalism GOLD design system (ported from the WallCup frontend).
+ * Themeable tokens come from CSS variables in globals.css (light + dark);
+ * accent colors are theme-aware via the same vars.
+ */
 const config: Config = {
   darkMode: "class",
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        // ── neobrutalism core ──
+        main: "var(--main)",
+        "main-foreground": "var(--main-foreground)",
+        background: "var(--background)",
+        "secondary-background": "var(--secondary-background)",
+        foreground: "var(--foreground)",
+        border: "var(--border)",
+        ring: "var(--ring)",
+        overlay: "var(--overlay)",
+        // ── aliases kept so not-yet-migrated components still compile ──
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "var(--secondary-background)",
+          foreground: "var(--foreground)",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "var(--main)",
+          foreground: "var(--main-foreground)",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "var(--muted)",
+          foreground: "var(--foreground)",
         },
-        success: "hsl(var(--success))",
-        warning: "hsl(var(--warning))",
-        danger: "hsl(var(--danger))",
+        input: "var(--border)",
+        // ── accents (theme-aware) ──
+        success: "var(--success)",
+        warning: "var(--warning)",
+        danger: "var(--danger)",
+        cyan: "var(--cyan)",
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        base: "6px",
+        lg: "6px",
+        md: "4px",
+        sm: "3px",
+      },
+      boxShadow: {
+        shadow: "var(--shadow)",
+      },
+      translate: {
+        boxShadowX: "4px",
+        boxShadowY: "4px",
+        reverseBoxShadowX: "-4px",
+        reverseBoxShadowY: "-4px",
+      },
+      fontWeight: {
+        base: "600",
+        heading: "800",
+      },
+      fontFamily: {
+        mono: [
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "Liberation Mono",
+          "monospace",
+        ],
       },
       keyframes: {
         "fade-in": {

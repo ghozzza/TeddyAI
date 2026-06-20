@@ -2,25 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Neobrutalism GOLD theme tokens (ported from WallCup) ── */
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 6% 8%;
-    --card-foreground: 0 0% 98%;
-    --muted: 240 5% 14%;
-    --muted-foreground: 240 5% 64%;
-    --primary: 45 93% 47%;
-    --primary-foreground: 240 10% 4%;
-    --accent: 240 5% 14%;
-    --accent-foreground: 0 0% 98%;
-    --border: 240 5% 16%;
-    --input: 240 5% 16%;
-    --ring: 45 93% 47%;
-    --success: 142 71% 45%;
-    --warning: 38 92% 50%;
-    --danger: 0 84% 60%;
-    --radius: 0.75rem;
+    --background: #fff8e7;
+    --secondary-background: #ffffff;
+    --foreground: #14130d;
+    --main-foreground: #14130d;
+    --main: #ffce1f; /* gold / kuning emas — selaras dengan brand BNB Chain */
+    --border: #14130d;
+    --ring: #14130d;
+    --muted: #f1ead3;
+    --muted-foreground: #6f6b56;
+    --overlay: rgba(0, 0, 0, 0.8);
+    --shadow: 4px 4px 0px 0px var(--border);
+
+    /* accents */
+    --success: #1f9d57;
+    --warning: #c98a10;
+    --danger: #d84a3c;
+    --cyan: #0f8f95;
+  }
+
+  .dark {
+    --background: #15140f;
+    --secondary-background: #1f1d15;
+    --foreground: #f2efe2;
+    --main-foreground: #14130d;
+    --main: #ffce1f;
+    --border: #000000;
+    --ring: #f2efe2;
+    --muted: #2a2820;
+    --muted-foreground: #a8a48f;
+    --overlay: rgba(0, 0, 0, 0.85);
+    --shadow: 4px 4px 0px 0px var(--border);
+
+    /* accents (tuned for dark) */
+    --success: #58d17d;
+    --warning: #d7b868;
+    --danger: #e35d4f;
+    --cyan: #70d6d1;
   }
 
   * {
@@ -28,22 +49,21 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background font-mono text-foreground;
+    font-weight: 600;
+    /* subtle gold grid — trading-desk / terminal vibe */
+    background-image:
+      linear-gradient(90deg, rgba(255, 206, 31, 0.05) 1px, transparent 1px),
+      linear-gradient(rgba(255, 206, 31, 0.04) 1px, transparent 1px);
+    background-size: 36px 36px;
   }
 }
 
-/* subtle gold gradient backdrop */
-.pekka-bg {
-  background:
-    radial-gradient(60rem 40rem at 80% -10%, hsl(45 93% 47% / 0.08), transparent 60%),
-    radial-gradient(50rem 40rem at 0% 10%, hsl(45 93% 47% / 0.05), transparent 55%);
-}
-
+/* thin scrollbar helper kept from the original */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
+  background: var(--border);
   border-radius: 9999px;
 }
