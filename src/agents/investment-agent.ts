@@ -3,7 +3,11 @@ import type { AgentResult, AllocationItem, AnalyzeRequest, Holding, MarketData, 
 import { SYSTEM_PROMPT, buildUserPrompt } from "@/prompts/system";
 import { normalizeAllocation } from "@/services/portfolio-engine";
 
-const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+// AI runs through OpenRouter (OpenAI-compatible gateway). Default model is a
+// cheap, JSON-reliable one; override with OPENROUTER_MODEL (e.g.
+// "anthropic/claude-3.5-sonnet", "google/gemini-2.0-flash-001").
+const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 
 /** Deterministic base allocations per risk profile (sum to 100). */
 const BASE: Record<RiskProfile, AllocationItem[]> = {
@@ -73,11 +77,16 @@ export async function generateAllocation(
   market: MarketData,
   current: Holding[],
 ): Promise<AgentResult> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return fallbackAllocation(req, market);
 
   try {
-    const client = new OpenAI({ apiKey });
+    const client = new OpenAI({
+      apiKey,
+      baseURL: OPENROUTER_BASE_URL,
+      // Optional OpenRouter attribution headers.
+      defaultHeaders: { "X-Title": "PekkaAI", "HTTP-Referer": "https://github.com/ghozzza/PekkaAI" },
+    });
     const completion = await client.chat.completions.create({
       model: MODEL,
       temperature: 0.4,
@@ -105,7 +114,7 @@ export async function generateAllocation(
       isMock: false,
     };
   } catch (err) {
-    console.error("[agent] OpenAI failed, using fallback:", err);
+    console.error("[agent] OpenRouter failed, using fallback:", err);
     return fallbackAllocation(req, market);
   }
 }

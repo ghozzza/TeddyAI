@@ -16,11 +16,11 @@ AI investment copilot on **BNB Chain**. Reads live market data from **CoinMarket
 
 - **Next.js 15** (App Router) + **TypeScript** + **TailwindCSS** — single app, API routes as the backend (no separate Express → no CORS, one deploy).
 - **wagmi + viem** — wallet connect on BNB Smart Chain (id 56) / BSC Testnet (id 97).
-- **OpenAI** — AI layer, abstracted behind one function so it can be swapped for Claude/Gemini later.
+- **OpenRouter** — AI layer (OpenAI-compatible gateway), abstracted behind one function so any model (GPT/Claude/Gemini) can be swapped via env.
 - **TanStack Query** — data fetching/caching on the client.
 - **No DB** — stateless, in‑memory cache for market data.
 
-Everything has a **deterministic fallback**: no CoinMarketCap key → mock market data; no OpenAI key → rule‑based allocation. **The demo never breaks on stage.**
+Everything has a **deterministic fallback**: no CoinMarketCap key → mock market data; no OpenRouter key → rule‑based allocation. **The demo never breaks on stage.**
 
 ## Quick start
 
@@ -34,8 +34,8 @@ Add keys in `.env.local` to go live:
 
 | Var | Purpose | Without it |
 |---|---|---|
-| `OPENAI_API_KEY` | AI allocations | Rule‑based fallback allocation |
-| `OPENAI_MODEL` | Model id (default `gpt-4o-mini`) | — |
+| `OPENROUTER_API_KEY` | AI allocations | Rule‑based fallback allocation |
+| `OPENROUTER_MODEL` | Model id (default `openai/gpt-4o-mini`) | — |
 | `CMC_API_KEY` | Live CoinMarketCap data | Mock market data |
 | `NEXT_PUBLIC_WC_PROJECT_ID` | WalletConnect connector | Injected (MetaMask) only |
 | `NEXT_PUBLIC_CHAIN` | `bsc` or `bscTestnet` | `bsc` |
@@ -56,7 +56,7 @@ Add keys in `.env.local` to go live:
 Frontend (Next.js / React)
   └─ /api/market, /api/analyze, /api/execute   (Next.js route handlers)
        ├─ services/coinmarketcap.ts   → CoinMarketCap (+ mock fallback)
-       ├─ agents/investment-agent.ts  → OpenAI (+ rule-based fallback)
+       ├─ agents/investment-agent.ts  → OpenRouter (+ rule-based fallback)
        ├─ services/risk-engine.ts     → risk score + warnings
        ├─ services/portfolio-engine.ts→ current vs target → actions
        └─ services/wallet.ts          → Trust Wallet Agent Kit (BNB Chain)
