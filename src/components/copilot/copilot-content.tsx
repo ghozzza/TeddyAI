@@ -2,6 +2,7 @@
 
 import { TopBar } from "@/components/top-bar";
 import { MarketOverviewCard } from "@/components/copilot/market-overview-card";
+import { TopGainers } from "@/components/copilot/top-gainers";
 import { ChatPanel } from "@/components/copilot/chat-panel";
 import { RiskScoreCard } from "@/components/copilot/risk-score-card";
 import { PortfolioCard } from "@/components/copilot/portfolio-card";
@@ -31,8 +32,9 @@ export function CopilotContent() {
       </section>
 
       {/* market */}
-      <section className="mb-6">
+      <section className="mb-6 space-y-3">
         <MarketOverviewCard />
+        <TopGainers />
       </section>
 
       {/* main grid */}
