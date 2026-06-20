@@ -1,0 +1,93 @@
+# Pekka AI — Investment Copilot
+
+AI investment copilot on **BNB Chain**. Reads live market data from **CoinMarketCap**, builds a risk‑aware portfolio allocation from your capital + risk profile, explains the reasoning, and rebalances via the **Trust Wallet Agent Kit**.
+
+> BNB Hack: CoinMarketCap × Trust Wallet × BNB Chain · Hackathon MVP
+
+## What it does
+
+1. **Market intelligence** — BTC price, BTC dominance, Fear & Greed, total market cap, top gainers (CoinMarketCap).
+2. **AI allocation** — "I have $10,000 with moderate risk" → a target portfolio (BTC/ETH/BNB/USDT…) with reasoning.
+3. **Risk engine** — concentration, stablecoin buffer, diversification → a 0‑10 risk score + warnings.
+4. **Portfolio diff** — current vs recommended → BUY / SELL / KEEP actions with USD amounts.
+5. **Execute** — one click rebalances on BNB Chain (simulated swaps; see integration point below).
+
+## Tech stack
+
+- **Next.js 15** (App Router) + **TypeScript** + **TailwindCSS** — single app, API routes as the backend (no separate Express → no CORS, one deploy).
+- **wagmi + viem** — wallet connect on BNB Smart Chain (id 56) / BSC Testnet (id 97).
+- **OpenAI** — AI layer, abstracted behind one function so it can be swapped for Claude/Gemini later.
+- **TanStack Query** — data fetching/caching on the client.
+- **No DB** — stateless, in‑memory cache for market data.
+
+Everything has a **deterministic fallback**: no CoinMarketCap key → mock market data; no OpenAI key → rule‑based allocation. **The demo never breaks on stage.**
+
+## Quick start
+
+```bash
+pnpm install
+cp .env.example .env.local   # optional — works without any keys (mock mode)
+pnpm dev                     # http://localhost:3000
+```
+
+Add keys in `.env.local` to go live:
+
+| Var | Purpose | Without it |
+|---|---|---|
+| `OPENAI_API_KEY` | AI allocations | Rule‑based fallback allocation |
+| `OPENAI_MODEL` | Model id (default `gpt-4o-mini`) | — |
+| `CMC_API_KEY` | Live CoinMarketCap data | Mock market data |
+| `NEXT_PUBLIC_WC_PROJECT_ID` | WalletConnect connector | Injected (MetaMask) only |
+| `NEXT_PUBLIC_CHAIN` | `bsc` or `bscTestnet` | `bsc` |
+
+## API
+
+| Method | Route | Body | Returns |
+|---|---|---|---|
+| `GET` | `/api/market` | — | `MarketData` |
+| `POST` | `/api/analyze` | `{ capital, risk, message?, current? }` | `{ result, risk, market, actions }` |
+| `POST` | `/api/execute` | `{ capital, targetAllocation, current?, walletAddress? }` | `{ actions, receipts, simulated, message }` |
+
+`risk` ∈ `conservative | moderate | aggressive`.
+
+## Architecture
+
+```
+Frontend (Next.js / React)
+  └─ /api/market, /api/analyze, /api/execute   (Next.js route handlers)
+       ├─ services/coinmarketcap.ts   → CoinMarketCap (+ mock fallback)
+       ├─ agents/investment-agent.ts  → OpenAI (+ rule-based fallback)
+       ├─ services/risk-engine.ts     → risk score + warnings
+       ├─ services/portfolio-engine.ts→ current vs target → actions
+       └─ services/wallet.ts          → Trust Wallet Agent Kit (BNB Chain)
+```
+
+```
+src/
+  app/            page.tsx, layout.tsx, providers.tsx, api/*/route.ts, globals.css
+  agents/         investment-agent.ts        # AI + deterministic fallback
+  services/       coinmarketcap.ts, risk-engine.ts, portfolio-engine.ts, wallet.ts
+  prompts/        system.ts                  # system + user prompt builder
+  components/     market/chat/portfolio/risk/execute cards + ui/ primitives
+  hooks/          use-market.ts, use-analyze.ts
+  lib/            wagmi.ts, api.ts, assets.ts, utils.ts
+  types/          index.ts
+```
+
+## Trust Wallet Agent Kit integration
+
+For the hackathon, swap execution is **simulated** (returns realistic tx receipts) so the demo is reliable. The single integration point is `src/services/wallet.ts` → `executeRebalance()`. Replace its body with real Agent Kit `swap()` calls (USDT → target on BNB Chain) to go live — the rest of the pipeline (diff, actions, USD amounts) already feeds it.
+
+## Risk engine rules (MVP)
+
+- **Concentration** — any single asset > 50% → high risk.
+- **Stable buffer** — stablecoins < 10% → warning.
+- **Diversification** — fewer than 3 assets → poor.
+- **Score** — 0‑10 from crypto exposure + concentration + stable buffer + diversification. Calibrated: conservative ≈ 4, moderate ≈ 6, aggressive ≈ 7.
+
+## Demo script
+
+1. Capital `$10,000`, risk **Moderate**, hit send.
+2. Pekka returns **Bullish · 6/10** → BTC 40 / ETH 30 / BNB 20 / USDT 10 with reasoning.
+3. Portfolio card shows USDT 100% → recommended, with BUY/SELL actions.
+4. Click **Rebalance Portfolio** → simulated swaps execute on BNB Chain.
