@@ -46,13 +46,15 @@ export function ChatPanel({
 
   return (
     <Card className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-border px-5 py-3.5">
-        <div className="grid h-8 w-8 place-items-center rounded-md bg-primary/15 text-primary">
+      <div className="flex items-center gap-2 border-b-2 border-border px-5 py-3.5">
+        <div className="grid size-8 place-items-center rounded-base border-2 border-border bg-main text-main-foreground">
           <Sparkles className="h-4 w-4" />
         </div>
         <div>
-          <p className="text-sm font-semibold leading-none">Pekka AI</p>
-          <p className="text-xs text-muted-foreground">Investment Copilot · BNB Chain</p>
+          <p className="text-sm font-heading uppercase tracking-tight leading-none">Pekka AI</p>
+          <p className="text-[11px] uppercase tracking-tight text-muted-foreground">
+            Investment Copilot · BNB Chain
+          </p>
         </div>
       </div>
 
@@ -61,10 +63,10 @@ export function ChatPanel({
         {messages.length === 0 && (
           <div className="grid h-full place-items-center text-center text-sm text-muted-foreground">
             <div className="max-w-xs space-y-2">
-              <p className="font-medium text-foreground">Tell Pekka your plan</p>
+              <p className="font-heading uppercase tracking-tight text-foreground">Tell Pekka your plan</p>
               <p>
                 Set your capital and risk profile, then ask for an allocation. e.g.{" "}
-                <span className="text-primary">&ldquo;I have $10,000 with moderate risk.&rdquo;</span>
+                <span className="text-foreground">&ldquo;I have $10,000 with moderate risk.&rdquo;</span>
               </p>
             </div>
           </div>
@@ -76,10 +78,10 @@ export function ChatPanel({
           >
             <div
               className={cn(
-                "max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+                "max-w-[85%] whitespace-pre-wrap rounded-base border-2 border-border px-4 py-2.5 text-sm leading-relaxed",
                 m.role === "user"
-                  ? "rounded-br-sm bg-primary text-primary-foreground"
-                  : "rounded-bl-sm bg-muted text-foreground",
+                  ? "bg-main text-main-foreground"
+                  : "bg-secondary-background text-foreground",
               )}
             >
               {m.content}
@@ -88,7 +90,7 @@ export function ChatPanel({
         ))}
         {isPending && (
           <div className="flex justify-start">
-            <div className="flex items-center gap-2 rounded-2xl rounded-bl-sm bg-muted px-4 py-2.5 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-base border-2 border-border bg-secondary-background px-4 py-2.5 text-sm text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" /> Analyzing market & building allocation…
             </div>
           </div>
@@ -96,9 +98,9 @@ export function ChatPanel({
       </div>
 
       {/* controls */}
-      <CardContent className="space-y-3 border-t border-border p-4">
+      <CardContent className="space-y-3 border-t-2 border-border p-4">
         <div className="flex gap-2">
-          <label className="flex flex-1 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm focus-within:ring-2 focus-within:ring-ring">
+          <label className="flex flex-1 items-center gap-2 rounded-base border-2 border-border bg-background px-3 text-sm focus-within:ring-2 focus-within:ring-ring">
             <span className="text-muted-foreground">$</span>
             <input
               type="number"
@@ -116,10 +118,10 @@ export function ChatPanel({
               key={r.value}
               onClick={() => onRisk(r.value)}
               className={cn(
-                "h-9 rounded-md border text-xs font-medium transition-colors",
+                "h-9 rounded-base border-2 border-border text-xs font-heading uppercase tracking-tight transition-all",
                 risk === r.value
-                  ? "border-primary bg-primary/15 text-primary"
-                  : "border-border text-muted-foreground hover:bg-accent",
+                  ? "bg-main text-main-foreground shadow-shadow"
+                  : "bg-secondary-background text-muted-foreground hover:bg-muted",
               )}
             >
               {r.label}
@@ -134,7 +136,7 @@ export function ChatPanel({
             onKeyDown={(e) => {
               if (e.key === "Enter" && !isPending && capital > 0) onSubmit();
             }}
-            className="h-10 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            className="h-10 flex-1 rounded-base border-2 border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
           <Button onClick={onSubmit} disabled={isPending || !capital} className="px-4">
             {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
