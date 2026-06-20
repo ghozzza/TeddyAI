@@ -111,7 +111,9 @@ export default function Home() {
           ) : (
             <Card className="grid h-full min-h-[300px] place-items-center">
               <CardContent className="max-w-sm text-center text-sm text-muted-foreground">
-                <p className="mb-1 font-medium text-foreground">Your allocation will appear here</p>
+                <p className="mb-1 font-heading uppercase tracking-tight text-foreground">
+                  Your allocation will appear here
+                </p>
                 <p>
                   Enter capital, pick a risk profile, and let Pekka build a risk-aware portfolio from
                   live market data — then rebalance on BNB Chain.
@@ -122,7 +124,7 @@ export default function Home() {
         </div>
       </div>
 
-      <footer className="mt-8 text-center text-xs text-muted-foreground">
+      <footer className="mt-10 border-t-2 border-border pt-4 text-center text-[11px] font-heading uppercase tracking-tight text-muted-foreground">
         Pekka AI · CoinMarketCap × Trust Wallet × BNB Chain · Hackathon MVP
       </footer>
     </div>
