@@ -12,7 +12,7 @@ export function ConnectButton() {
   if (isConnected && address) {
     return (
       <Button variant="outline" size="sm" onClick={() => disconnect()}>
-        <span className="h-2 w-2 rounded-full bg-success" />
+        <span className="size-2 rounded-full border border-border bg-success" />
         {address.slice(0, 6)}…{address.slice(-4)}
       </Button>
     );

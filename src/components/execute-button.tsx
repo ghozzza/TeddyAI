@@ -33,8 +33,8 @@ export function ExecuteButton({
       {error && <p className="text-sm text-danger">{(error as Error).message}</p>}
 
       {data && (
-        <div className="animate-fade-in space-y-2 rounded-lg border border-success/30 bg-success/5 p-4">
-          <div className="flex items-center gap-2 text-sm font-medium text-success">
+        <div className="animate-fade-in space-y-2 rounded-base border-2 border-border bg-success/10 p-4 shadow-shadow">
+          <div className="flex items-center gap-2 text-sm font-heading uppercase tracking-tight text-success">
             <CheckCircle2 className="h-4 w-4" />
             Rebalance complete
             {data.simulated && <Badge tone="warning">Simulated</Badge>}
@@ -47,7 +47,7 @@ export function ExecuteButton({
                   <Badge tone={r.action === "BUY" ? "success" : "danger"} className="w-12 justify-center">
                     {r.action}
                   </Badge>
-                  <span className="font-medium">{r.symbol}</span>
+                  <span className="font-heading">{r.symbol}</span>
                   <span className="text-muted-foreground">{formatUsd(r.amountUsd, { compact: true })}</span>
                 </span>
                 <code className="text-muted-foreground">
