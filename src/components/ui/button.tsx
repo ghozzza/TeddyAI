@@ -4,11 +4,16 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "outline" | "ghost";
 type Size = "sm" | "md" | "lg";
 
+const base =
+  "inline-flex items-center justify-center gap-2 rounded-base font-heading uppercase tracking-tight transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50";
+
 const variants: Record<Variant, string> = {
+  // gold neobrutalism: hard shadow that collapses on press
   primary:
-    "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm font-semibold",
-  outline: "border border-border bg-transparent hover:bg-accent",
-  ghost: "bg-transparent hover:bg-accent",
+    "bg-main text-main-foreground border-2 border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
+  outline:
+    "bg-secondary-background text-foreground border-2 border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
+  ghost: "bg-transparent text-foreground hover:bg-muted",
 };
 
 const sizes: Record<Size, string> = {
@@ -27,12 +32,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-          variants[variant],
-          sizes[size],
-          className,
-        )}
+        className={cn(base, variants[variant], sizes[size], className)}
         {...props}
       />
     );

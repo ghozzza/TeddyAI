@@ -3,12 +3,13 @@ import { cn } from "@/lib/utils";
 
 type Tone = "default" | "success" | "warning" | "danger" | "gold";
 
+// Neobrutalism badges: solid-ish tint + hard border, readable in light & dark.
 const tones: Record<Tone, string> = {
-  default: "bg-muted text-muted-foreground",
-  success: "bg-success/15 text-[hsl(var(--success))]",
-  warning: "bg-warning/15 text-[hsl(var(--warning))]",
-  danger: "bg-danger/15 text-[hsl(var(--danger))]",
-  gold: "bg-primary/15 text-primary",
+  default: "bg-secondary-background text-foreground",
+  success: "bg-success/20 text-success",
+  warning: "bg-warning/20 text-warning",
+  danger: "bg-danger/20 text-danger",
+  gold: "bg-main text-main-foreground",
 };
 
 export function Badge({
@@ -19,7 +20,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1 rounded-base border-2 border-border px-2 py-0.5 text-[11px] font-heading uppercase tracking-tight",
         tones[tone],
         className,
       )}
