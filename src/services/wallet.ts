@@ -97,15 +97,26 @@ async function executeLive(actions: PortfolioAction[]): Promise<ExecuteResult> {
   const bin = process.env.TWAK_BIN || "twak";
   const plan = buildSwapPlan(tradesOf(actions));
 
+  // Password goes via env (twak reads TWAK_WALLET_PASSWORD), never on argv —
+  // keeps it out of `ps`/process listings.
+  const childEnv = { ...process.env, TWAK_WALLET_PASSWORD: password };
+
   const receipts: ExecuteResult["receipts"] = [];
   let ok = 0;
   for (const s of plan) {
     const [from, to] = s.side === "BUY" ? ["USDT", s.symbol] : [s.symbol, "USDT"];
+    // Guard against argv flag-smuggling: only ever pass plain ticker symbols.
+    if (!isTicker(from) || !isTicker(to)) {
+      console.error(`[wallet] skipping swap with non-ticker symbol: ${from}->${to}`);
+      receipts.push({ symbol: s.symbol, action: s.side, amountUsd: s.amountUsd, txHash: "" });
+      continue;
+    }
     try {
+      // `--` stops option parsing so a ticker can never be read as a flag.
       const { stdout } = await execFileAsync(
         bin,
-        ["swap", "--usd", String(s.amountUsd), from, to, "--chain", chain.twakChain, "--slippage", "1", "--json", "--password", password],
-        { timeout: 180_000, env: process.env, maxBuffer: 1024 * 1024 },
+        ["swap", "--usd", String(s.amountUsd), "--chain", chain.twakChain, "--slippage", "1", "--json", "--", from, to],
+        { timeout: 180_000, env: childEnv, maxBuffer: 1024 * 1024 },
       );
       const res = JSON.parse(stdout) as Record<string, unknown>;
       const txHash = String(res.txHash ?? res.hash ?? res.transactionHash ?? res.tx ?? "");
@@ -161,4 +172,9 @@ function shorten(addr: string) {
 
 function round2(n: number) {
   return Math.round(n * 100) / 100;
+}
+
+/** Plain exchange ticker — guards the swap CLI against argv flag smuggling. */
+function isTicker(s: string): boolean {
+  return /^[A-Z0-9]{2,12}$/.test(s);
 }
