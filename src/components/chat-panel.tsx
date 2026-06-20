@@ -5,12 +5,7 @@ import { Send, Sparkles, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { RiskProfile } from "@/types";
-
-export interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-}
+import type { ChatMessage, RiskProfile } from "@/types";
 
 const RISKS: { value: RiskProfile; label: string }[] = [
   { value: "conservative", label: "Conservative" },

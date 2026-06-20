@@ -2,6 +2,12 @@
 
 export type RiskProfile = "conservative" | "moderate" | "aggressive";
 
+/** A single chat turn in the copilot conversation. */
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export type MarketRegime = "Bullish" | "Bearish" | "Neutral" | "Risk-Off";
 
 export interface AllocationItem {
