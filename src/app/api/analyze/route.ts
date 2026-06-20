@@ -1,25 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { AnalyzeRequest } from "@/types";
 import { getMarketData } from "@/services/coinmarketcap";
 import { generateAllocation } from "@/agents/investment-agent";
 import { assessRisk } from "@/services/risk-engine";
 import { buildActions, defaultCurrent } from "@/services/portfolio-engine";
+import { analyzeRequestSchema, firstIssue } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as Partial<AnalyzeRequest>;
-
-    const capital = Number(body.capital);
-    if (!capital || capital <= 0) {
-      return NextResponse.json({ error: "Provide a positive capital amount." }, { status: 400 });
+    const json = await req.json().catch(() => null);
+    const parsed = analyzeRequestSchema.safeParse(json);
+    if (!parsed.success) {
+      return NextResponse.json({ error: firstIssue(parsed.error) }, { status: 400 });
     }
-    const risk = (body.risk ?? "moderate") as AnalyzeRequest["risk"];
-    const current = body.current?.length ? body.current : defaultCurrent(capital);
+    const { capital, risk, message } = parsed.data;
+    const current = parsed.data.current?.length ? parsed.data.current : defaultCurrent(capital);
 
     const market = await getMarketData();
-    const result = await generateAllocation({ capital, risk, message: body.message, current }, market, current);
+    const result = await generateAllocation({ capital, risk, message, current }, market, current);
 
     // Risk engine is the single source of truth for the displayed risk score.
     const risk_report = assessRisk(result.allocation);
