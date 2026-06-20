@@ -1,11 +1,11 @@
 "use client";
 
 import { TopBar } from "@/components/top-bar";
-import { MarketOverviewCard } from "@/components/market-overview-card";
-import { ChatPanel } from "@/components/chat-panel";
-import { RiskScoreCard } from "@/components/risk-score-card";
-import { PortfolioCard } from "@/components/portfolio-card";
-import { ExecuteButton } from "@/components/execute-button";
+import { MarketOverviewCard } from "@/components/copilot/market-overview-card";
+import { ChatPanel } from "@/components/copilot/chat-panel";
+import { RiskScoreCard } from "@/components/copilot/risk-score-card";
+import { PortfolioCard } from "@/components/copilot/portfolio-card";
+import { ExecuteButton } from "@/components/copilot/execute-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCopilot } from "@/hooks/use-copilot";
 
