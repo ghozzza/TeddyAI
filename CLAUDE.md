@@ -54,24 +54,33 @@ adding code:
   (`queryKeys.market.latest()`). Query client + defaults in `lib/react-query/query-client.ts`
   (`makeQueryClient` factory — per-request on server, stable in browser).
 - **Errors** go through `extractErrorMessage()` (`lib/utils.ts`) — never surface a blank error.
+- **API input** is validated with zod schemas in `lib/validation.ts` — routes return a clean 400.
 - **Naming:** kebab-case files, PascalCase component exports, camelCase hooks, named exports
   (default export only where Next requires it: page/layout/route). Reusable types → `types/`;
   single-use `Props` may stay inline.
 - **Typography** via `next/font` (`JetBrains_Mono`, `--font-mono`), not raw CSS font stacks.
+- **Tests** live beside the code (`*.test.ts`), run with `pnpm test` (Vitest, `@` alias). CI runs
+  typecheck + test + build on push/PR.
 
 ## Architecture notes
 
 - Every external dependency has a **deterministic fallback** so the demo never breaks:
-  no `OPENAI_API_KEY` → rule-based allocation (`isMock`); no `CMC_API_KEY` → mock market data.
+  no `OPENROUTER_API_KEY` → rule-based allocation (`isMock`); no `CMC_API_KEY` → mock market data.
+- **AI runs through OpenRouter** (OpenAI-compatible SDK, `baseURL` + `OPENROUTER_API_KEY`,
+  model via `OPENROUTER_MODEL`). Swap models by env, no code change.
 - The **risk engine is the source of truth** for `riskScore` — it overrides the AI's score in
   `api/analyze`. Don't trust the model's self-reported score.
-- On-chain execution (`services/wallet.ts`) is **simulated** (fake tx hashes); the real Trust Wallet
-  Agent Kit integration point is stubbed with a comment. This is the one not-yet-real piece.
+- On-chain execution (`services/wallet.ts`) has `simulated` (default) and `live` modes behind
+  `WALLET_EXECUTION_MODE`. Live path is scaffolded (config validation, chain select, swap plan)
+  with one marked integration point for the Trust Wallet Agent Kit; falls back to simulated on
+  failure. This is the one not-yet-real piece.
 - No DB — market data is in-memory cached (60s TTL).
 
 ## Known follow-ups
 
-- On-chain execution is still simulated — wire the real Trust Wallet Agent Kit in
-  `services/wallet.ts` (stub + integration comment already there) once wallet access is available.
+- **Live execution needs the SDK + a funded wallet**: `pnpm add @trustwallet/agent-kit`, set
+  `WALLET_EXECUTION_MODE=live` + `TRUSTWALLET_PRIVATE_KEY`, and fill the marked integration point
+  in `executeLive` (`services/wallet.ts`). Everything around it is ready.
 - Build shows one third-party warning from `ox`/`viem` (`Critical dependency: … expression`) pulled
   in via wagmi. Harmless; not our code.
+- recharts adds ~125 kB to the `/` first-load JS. Acceptable for the MVP; revisit if bundle matters.
