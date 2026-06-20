@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp } from "lucide-react";
-import { ConnectButton } from "@/components/connect-button";
+import { TopBar } from "@/components/top-bar";
 import { MarketOverviewCard } from "@/components/market-overview-card";
 import { ChatPanel, type ChatMessage } from "@/components/chat-panel";
 import { RiskScoreCard } from "@/components/risk-score-card";
@@ -60,18 +59,21 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 lg:py-8">
       {/* header */}
-      <header className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground">
-            <TrendingUp className="h-5 w-5" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold leading-none">Pekka AI</h1>
-            <p className="text-xs text-muted-foreground">Investment Copilot</p>
-          </div>
-        </div>
-        <ConnectButton />
-      </header>
+      <TopBar />
+
+      {/* hero */}
+      <section className="py-10 lg:py-14">
+        <p className="mb-3 text-xs font-heading uppercase tracking-tight text-cyan">
+          AI Investment Copilot · BNB Chain
+        </p>
+        <h1 className="max-w-3xl font-heading uppercase leading-[0.95] tracking-tight text-[clamp(34px,6vw,76px)]">
+          Risk-aware crypto allocation, on autopilot.
+        </h1>
+        <p className="mt-4 max-w-xl text-sm text-muted-foreground">
+          Pekka reads live market intelligence, builds a risk-scored portfolio, and rebalances
+          on BNB Chain — one click.
+        </p>
+      </section>
 
       {/* market */}
       <section className="mb-6">
