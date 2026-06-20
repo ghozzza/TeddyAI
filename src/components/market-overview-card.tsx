@@ -27,11 +27,13 @@ function Stat({
   return (
     <Card className="animate-fade-in">
       <CardContent className="flex items-start gap-3 p-4">
-        <div className="mt-0.5 rounded-md bg-primary/10 p-2 text-primary">{icon}</div>
+        <div className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-base border-2 border-border bg-main/20 text-foreground">
+          {icon}
+        </div>
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="truncate text-lg font-semibold">{value}</p>
-          {sub && <div className="mt-0.5 text-xs">{sub}</div>}
+          <p className="text-[11px] font-heading uppercase tracking-tight text-muted-foreground">{label}</p>
+          <p className="truncate text-lg font-heading">{value}</p>
+          {sub && <div className="mt-1 text-xs">{sub}</div>}
         </div>
       </CardContent>
     </Card>
