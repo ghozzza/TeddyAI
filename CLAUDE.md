@@ -74,7 +74,15 @@ adding code:
   `WALLET_EXECUTION_MODE`. Live path is scaffolded (config validation, chain select, swap plan)
   with one marked integration point for the Trust Wallet Agent Kit; falls back to simulated on
   failure. This is the one not-yet-real piece.
-- No DB — market data is in-memory cached (60s TTL).
+- No DB — market data is in-memory cached (60s TTL). The autonomous agent's decision history
+  is an append-only JSONL file (`data/agent-log.jsonl`, gitignored).
+- **One pipeline, two callers**: `services/agent-cycle.ts` (`runAnalysis` / `runAgentCycle`) is
+  shared by `/api/analyze` (request-driven) and `scripts/worker.ts` (the autonomous loop). Don't
+  duplicate the market→AI→risk→actions flow — extend `agent-cycle`.
+- **Autonomous worker** (`pnpm worker`) is **propose-only by default** (`AGENT_AUTO_EXECUTE=false`)
+  and only rebalances when drift ≥ `AGENT_DRIFT_THRESHOLD`. It's a separate process from the web
+  server (same codebase); on a VPS run both under PM2/systemd. twak is a local CLI, so live
+  execution only runs where twak + the wallet live (not Vercel).
 
 ## Known follow-ups
 

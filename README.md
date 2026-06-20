@@ -52,6 +52,22 @@ pnpm build        # production build
 
 CI (`.github/workflows/ci.yml`) runs typecheck + tests + build on every push and PR.
 
+## Autonomous agent
+
+The same pipeline runs unattended via a worker loop:
+
+```bash
+pnpm worker          # loop on AGENT_INTERVAL (default 1h)
+pnpm worker:once     # single cycle (cron-friendly)
+```
+
+Each cycle: read market → AI allocation → risk → diff → **rebalance only when drift ≥
+`AGENT_DRIFT_THRESHOLD`** → log the decision + reasoning to `data/agent-log.jsonl`. It is
+**propose-only by default** (`AGENT_AUTO_EXECUTE=false`) — it records what it *would* do without
+spending funds until you trust it; flip to `true` for real swaps. Decisions surface live in the
+**Agent Activity** panel (`/api/history`). Tune `AGENT_CAPITAL` / `AGENT_RISK` / `AGENT_INTERVAL`
+via env. On a VPS, keep it alive with PM2/systemd.
+
 ## API
 
 | Method | Route | Body | Returns |
@@ -59,6 +75,7 @@ CI (`.github/workflows/ci.yml`) runs typecheck + tests + build on every push and
 | `GET` | `/api/market` | — | `MarketData` |
 | `POST` | `/api/analyze` | `{ capital, risk, message?, current? }` | `{ result, risk, market, actions }` |
 | `POST` | `/api/execute` | `{ capital, targetAllocation, current?, walletAddress? }` | `{ actions, receipts, simulated, message }` |
+| `GET` | `/api/history` | `?limit=` | `{ entries }` (autonomous decision log) |
 
 `risk` ∈ `conservative | moderate | aggressive`.
 
@@ -78,12 +95,15 @@ Frontend (Next.js / React)
 src/
   app/            page.tsx (thin server), layout.tsx, providers.tsx, api/*/route.ts
   agents/         investment-agent.ts        # OpenRouter + deterministic fallback
-  services/       coinmarketcap.ts, risk-engine.ts, portfolio-engine.ts, wallet.ts
+  services/       coinmarketcap, risk-engine, portfolio-engine, wallet (twak),
+                  agent-cycle (shared pipeline), agent-log (JSONL persistence)
   prompts/        system.ts                  # system + user prompt builder
   components/     copilot/ (feature) + top-bar, theme-* + ui/ primitives
-  hooks/          use-copilot.ts, use-market.ts, use-analyze.ts
+  hooks/          use-copilot, use-market, use-analyze, use-history
   lib/            react-query/, validation.ts, wagmi.ts, api.ts, assets.ts, utils.ts
   types/          index.ts
+scripts/
+  worker.ts       # autonomous agent loop (pnpm worker)
 ```
 
 Tests live next to the code they cover (`*.test.ts`).
