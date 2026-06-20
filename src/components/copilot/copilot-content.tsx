@@ -7,6 +7,7 @@ import { ChatPanel } from "@/components/copilot/chat-panel";
 import { RiskScoreCard } from "@/components/copilot/risk-score-card";
 import { PortfolioCard } from "@/components/copilot/portfolio-card";
 import { ExecuteButton } from "@/components/copilot/execute-button";
+import { AgentActivity } from "@/components/copilot/agent-activity";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCopilot } from "@/hooks/use-copilot";
 
@@ -84,6 +85,11 @@ export function CopilotContent() {
           )}
         </div>
       </div>
+
+      {/* autonomous agent decision log */}
+      <section className="mt-6">
+        <AgentActivity />
+      </section>
 
       <footer className="mt-10 border-t-2 border-border pt-4 text-center text-[11px] font-heading uppercase tracking-tight text-muted-foreground">
         Pekka AI · CoinMarketCap × Trust Wallet × BNB Chain · Hackathon MVP

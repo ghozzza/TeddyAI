@@ -7,6 +7,7 @@ import type {
   AgentResult,
   RiskReport,
 } from "@/types";
+import type { AgentLogEntry } from "@/services/agent-log";
 
 export interface AnalyzeResponse {
   result: AgentResult;
@@ -38,4 +39,11 @@ export function analyze(req: AnalyzeRequest): Promise<AnalyzeResponse> {
 
 export function execute(req: ExecuteRequest): Promise<ExecuteResult> {
   return post<ExecuteResult>("/api/execute", req);
+}
+
+export async function fetchHistory(limit = 20): Promise<AgentLogEntry[]> {
+  const res = await fetch(`/api/history?limit=${limit}`);
+  if (!res.ok) throw new Error("Failed to load agent history");
+  const json = (await res.json()) as { entries: AgentLogEntry[] };
+  return json.entries;
 }
