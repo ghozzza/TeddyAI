@@ -10,7 +10,7 @@ AI investment copilot on **BNB Chain**. Reads live market data from **CoinMarket
 2. **AI allocation** — "I have $10,000 with moderate risk" → a target portfolio (BTC/ETH/BNB/USDT…) with reasoning.
 3. **Risk engine** — concentration, stablecoin buffer, diversification → a 0‑10 risk score + warnings.
 4. **Portfolio diff** — current vs recommended → BUY / SELL / KEEP actions with USD amounts.
-5. **Execute** — one click rebalances on BNB Chain (simulated swaps; see integration point below).
+5. **Execute** — rebalances on BNB Chain via the **Trust Wallet Agent Kit** (real swaps in `live` mode; safe simulation by default).
 
 ## Tech stack
 
@@ -110,7 +110,7 @@ Tests live next to the code they cover (`*.test.ts`).
 
 ## Trust Wallet Agent Kit integration
 
-Execution runs in two modes (`WALLET_EXECUTION_MODE`): **`simulated`** (default — realistic tx receipts, demo never depends on a funded wallet) and **`live`**. The live path in `src/services/wallet.ts` (`executeLive`) already validates config, selects the chain (mainnet 56 / testnet 97), and builds a USDT‑based swap plan — there's a single marked integration point to drop in the Agent Kit `swap()` calls. Any live failure falls back to simulated so the UI never dies.
+Execution runs in two modes (`WALLET_EXECUTION_MODE`): **`simulated`** (default — realistic tx receipts, demo never depends on a funded wallet) and **`live`** (real). In live mode `src/services/wallet.ts` (`executeLive`) shells out to the **Trust Wallet Agent Kit CLI** — `twak swap --usd <amt> --chain bsc --json -- <from> <to>` per BUY/SELL, password via the `TWAK_WALLET_PASSWORD` env (never argv). Tickers are validated, then mapped to canonical BSC **contract addresses** via `src/lib/bsc-tokens.ts` (twak silently mis-resolves `BTC`/`SOL` → BNB, so contracts are required). Any pre-flight failure falls back to simulated so the UI never dies. The autonomous worker additionally reads the wallet's real holdings and keeps a BNB gas reserve. One-time setup (`twak init` + `twak wallet create` + `twak compete register` + fund) and VPS deployment are in **[DEPLOY.md](./DEPLOY.md)**.
 
 ## Risk engine rules (MVP)
 
@@ -124,4 +124,5 @@ Execution runs in two modes (`WALLET_EXECUTION_MODE`): **`simulated`** (default 
 1. Capital `$10,000`, risk **Moderate**, hit send.
 2. Pekka returns **Bullish · 6/10** → BTC 40 / ETH 30 / BNB 20 / USDT 10 with reasoning.
 3. Portfolio card shows USDT 100% → recommended, with BUY/SELL actions.
-4. Click **Rebalance Portfolio** → simulated swaps execute on BNB Chain.
+4. Click **Rebalance Portfolio** → swaps execute on BNB Chain (simulated by default; real via the Trust Wallet Agent Kit in `live` mode).
+5. Or let it run itself: `pnpm worker` (autonomous loop — reads live holdings, rebalances on drift, logs reasoning to the Agent Activity panel).

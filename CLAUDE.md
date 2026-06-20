@@ -71,9 +71,14 @@ adding code:
 - The **risk engine is the source of truth** for `riskScore` — it overrides the AI's score in
   `api/analyze`. Don't trust the model's self-reported score.
 - On-chain execution (`services/wallet.ts`) has `simulated` (default) and `live` modes behind
-  `WALLET_EXECUTION_MODE`. Live path is scaffolded (config validation, chain select, swap plan)
-  with one marked integration point for the Trust Wallet Agent Kit; falls back to simulated on
-  failure. This is the one not-yet-real piece.
+  `WALLET_EXECUTION_MODE`. **Live is real** — `executeLive` shells out to the **Trust Wallet Agent
+  Kit CLI** (`twak swap … --json`, password via `TWAK_WALLET_PASSWORD` env, never argv); proven
+  end-to-end on BSC. The worker reads the wallet's **real holdings** via twak (`useRealBalances`)
+  and reserves `AGENT_GAS_RESERVE_USD` of BNB so it never sells its gas. Live falls back to
+  simulated on any pre-flight failure.
+- **twak mis-resolves some BSC symbols to BNB** (verified: `BTC`→BNB, `SOL`→BNB!). `src/lib/bsc-tokens.ts`
+  maps our universe to canonical BSC **contract addresses** for swaps and normalizes `BTCB`→`BTC`
+  on read. Always use a contract address for a new token on BSC via twak.
 - No DB — market data is in-memory cached (60s TTL). The autonomous agent's decision history
   is an append-only JSONL file (`data/agent-log.jsonl`, gitignored).
 - **One pipeline, two callers**: `services/agent-cycle.ts` (`runAnalysis` / `runAgentCycle`) is
@@ -84,11 +89,18 @@ adding code:
   server (same codebase); on a VPS run both under PM2/systemd. twak is a local CLI, so live
   execution only runs where twak + the wallet live (not Vercel).
 
-## Known follow-ups
+## Status & follow-ups (handoff)
 
-- **Live execution needs the SDK + a funded wallet**: `pnpm add @trustwallet/agent-kit`, set
-  `WALLET_EXECUTION_MODE=live` + `TRUSTWALLET_PRIVATE_KEY`, and fill the marked integration point
-  in `executeLive` (`services/wallet.ts`). Everything around it is ready.
-- Build shows one third-party warning from `ox`/`viem` (`Critical dependency: … expression`) pulled
-  in via wagmi. Harmless; not our code.
-- recharts adds ~125 kB to the `/` first-load JS. Acceptable for the MVP; revisit if bundle matters.
+Code is **done & deploy-ready** (UI, CMC/AI/risk live, autonomous worker, live twak execution
+proven on-chain, registered for the hackathon). Remaining is operational, not code:
+
+1. **Deploy to VPS** — artifacts ready (`deploy/`, `DEPLOY.md`). **Blocked**: the EC2
+   (`13.215.175.99`) is unreachable — ports 22/443/3000 time out from egress `182.253.8.82`
+   (instance stopped or security group not allowing it). Re-test SSH once devops fixes it.
+2. **Top up the agent wallet** `0x8726894b84b4c3c7CDDa3b75804EF9698e79440F` — only ~$0.58 in it;
+   needs more USDT (to trade) + BNB (gas) before the trading window. Ask draft in
+   `draft/chat-minta-funds-mas-fandi.md`.
+3. **Run live during the trading window** (Jun 22-28): `AGENT_AUTO_EXECUTE=true`, worker alive on the VPS.
+4. **Submit BUIDL on DoraHacks** — the user wants this last, once everything works.
+
+Minor: `ox`/`viem` build warning via wagmi (harmless); recharts adds ~125 kB to `/` first-load.
