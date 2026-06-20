@@ -37,6 +37,28 @@ When unsure how something should look, open the matching component under `../Wal
   declaring a reskin done.
 - **Verify claims against the codebase** before writing them into docs/pitch/submission.
 
+## Code conventions
+
+Stack-idiomatic patterns (Next.js App Router + TS + Tailwind + TanStack Query). Follow when
+adding code:
+
+- **Thin page → Content → hook.** `app/page.tsx` is a server component that just renders a
+  feature `*Content` client component. Orchestration state/logic lives in a custom hook
+  (`hooks/use-copilot.ts`), not in the component. Keeps the page prerenderable and the content testable.
+- **Feature folders.** Domain components live under `components/<feature>/` (e.g. `components/copilot/`).
+  App-shell components (`top-bar`, `connect-button`, `theme-*`) stay at `components/` root;
+  `components/ui/` holds primitives only.
+- **Two-layer data fetching.** `lib/api.ts` = pure async fns (no React). `hooks/use-*.ts` = thin
+  TanStack Query wrappers. Components call the hook, never `useQuery`/`fetch` directly.
+- **Query keys are hierarchical & centralized** in `lib/react-query/query-keys.ts`
+  (`queryKeys.market.latest()`). Query client + defaults in `lib/react-query/query-client.ts`
+  (`makeQueryClient` factory — per-request on server, stable in browser).
+- **Errors** go through `extractErrorMessage()` (`lib/utils.ts`) — never surface a blank error.
+- **Naming:** kebab-case files, PascalCase component exports, camelCase hooks, named exports
+  (default export only where Next requires it: page/layout/route). Reusable types → `types/`;
+  single-use `Props` may stay inline.
+- **Typography** via `next/font` (`JetBrains_Mono`, `--font-mono`), not raw CSS font stacks.
+
 ## Architecture notes
 
 - Every external dependency has a **deterministic fallback** so the demo never breaks:
@@ -49,5 +71,7 @@ When unsure how something should look, open the matching component under `../Wal
 
 ## Known follow-ups
 
-- `chat-panel` props trip the Next "use client" serializable-props lint (`onCapital`/`onRisk`/…).
-  Cosmetic warning only (tsc passes); rename to `*Action` or restructure if it becomes noisy.
+- On-chain execution is still simulated — wire the real Trust Wallet Agent Kit in
+  `services/wallet.ts` (stub + integration comment already there) once wallet access is available.
+- Build shows one third-party warning from `ox`/`viem` (`Critical dependency: … expression`) pulled
+  in via wagmi. Harmless; not our code.
