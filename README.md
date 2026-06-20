@@ -38,7 +38,19 @@ Add keys in `.env.local` to go live:
 | `OPENROUTER_MODEL` | Model id (default `openai/gpt-4o-mini`) | — |
 | `CMC_API_KEY` | Live CoinMarketCap data | Mock market data |
 | `NEXT_PUBLIC_WC_PROJECT_ID` | WalletConnect connector | Injected (MetaMask) only |
-| `NEXT_PUBLIC_CHAIN` | `bsc` or `bscTestnet` | `bsc` |
+| `NEXT_PUBLIC_CHAIN` | `bsc` (mainnet) or `bscTestnet` | `bsc` |
+| `WALLET_EXECUTION_MODE` | `live` for real swaps | `simulated` |
+| `TRUSTWALLET_PRIVATE_KEY` | Executing wallet (live mode, server‑side) | — |
+
+## Develop
+
+```bash
+pnpm test         # vitest — engines, agent fallback, request validation
+pnpm typecheck    # tsc --noEmit
+pnpm build        # production build
+```
+
+CI (`.github/workflows/ci.yml`) runs typecheck + tests + build on every push and PR.
 
 ## API
 
@@ -64,19 +76,21 @@ Frontend (Next.js / React)
 
 ```
 src/
-  app/            page.tsx, layout.tsx, providers.tsx, api/*/route.ts, globals.css
-  agents/         investment-agent.ts        # AI + deterministic fallback
+  app/            page.tsx (thin server), layout.tsx, providers.tsx, api/*/route.ts
+  agents/         investment-agent.ts        # OpenRouter + deterministic fallback
   services/       coinmarketcap.ts, risk-engine.ts, portfolio-engine.ts, wallet.ts
   prompts/        system.ts                  # system + user prompt builder
-  components/     market/chat/portfolio/risk/execute cards + ui/ primitives
-  hooks/          use-market.ts, use-analyze.ts
-  lib/            wagmi.ts, api.ts, assets.ts, utils.ts
+  components/     copilot/ (feature) + top-bar, theme-* + ui/ primitives
+  hooks/          use-copilot.ts, use-market.ts, use-analyze.ts
+  lib/            react-query/, validation.ts, wagmi.ts, api.ts, assets.ts, utils.ts
   types/          index.ts
 ```
 
+Tests live next to the code they cover (`*.test.ts`).
+
 ## Trust Wallet Agent Kit integration
 
-For the hackathon, swap execution is **simulated** (returns realistic tx receipts) so the demo is reliable. The single integration point is `src/services/wallet.ts` → `executeRebalance()`. Replace its body with real Agent Kit `swap()` calls (USDT → target on BNB Chain) to go live — the rest of the pipeline (diff, actions, USD amounts) already feeds it.
+Execution runs in two modes (`WALLET_EXECUTION_MODE`): **`simulated`** (default — realistic tx receipts, demo never depends on a funded wallet) and **`live`**. The live path in `src/services/wallet.ts` (`executeLive`) already validates config, selects the chain (mainnet 56 / testnet 97), and builds a USDT‑based swap plan — there's a single marked integration point to drop in the Agent Kit `swap()` calls. Any live failure falls back to simulated so the UI never dies.
 
 ## Risk engine rules (MVP)
 
