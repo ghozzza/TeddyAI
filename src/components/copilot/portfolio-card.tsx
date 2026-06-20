@@ -3,6 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AllocationDonut } from "@/components/copilot/allocation-donut";
 import type { AllocationItem, Holding, PortfolioAction } from "@/types";
 import { assetColor, assetName } from "@/lib/assets";
 import { cn, formatUsd } from "@/lib/utils";
@@ -47,7 +48,7 @@ export function PortfolioCard({
         </div>
         <div className="space-y-2">
           <p className="text-[11px] font-heading uppercase tracking-tight text-foreground">Recommended</p>
-          <StackedBar items={target} />
+          <AllocationDonut items={target} />
         </div>
 
         <div className="space-y-1.5 pt-1">
