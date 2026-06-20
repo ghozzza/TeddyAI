@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { toTwakToken } from "@/lib/bsc-tokens";
 import type { ExecuteResult, PortfolioAction } from "@/types";
 
 const execFileAsync = promisify(execFile);
@@ -105,17 +106,21 @@ async function executeLive(actions: PortfolioAction[]): Promise<ExecuteResult> {
   let ok = 0;
   for (const s of plan) {
     const [from, to] = s.side === "BUY" ? ["USDT", s.symbol] : [s.symbol, "USDT"];
-    // Guard against argv flag-smuggling: only ever pass plain ticker symbols.
+    // Guard against argv flag-smuggling: only ever accept plain ticker symbols
+    // from the allocation before mapping them to trusted BSC token addresses.
     if (!isTicker(from) || !isTicker(to)) {
       console.error(`[wallet] skipping swap with non-ticker symbol: ${from}->${to}`);
       receipts.push({ symbol: s.symbol, action: s.side, amountUsd: s.amountUsd, txHash: "" });
       continue;
     }
+    // twak mis-resolves some symbols (BTC/SOL -> BNB) — use canonical contracts.
+    const fromTok = toTwakToken(from);
+    const toTok = toTwakToken(to);
     try {
-      // `--` stops option parsing so a ticker can never be read as a flag.
+      // `--` stops option parsing so an argument can never be read as a flag.
       const { stdout } = await execFileAsync(
         bin,
-        ["swap", "--usd", String(s.amountUsd), "--chain", chain.twakChain, "--slippage", "1", "--json", "--", from, to],
+        ["swap", "--usd", String(s.amountUsd), "--chain", chain.twakChain, "--slippage", "1", "--json", "--", fromTok, toTok],
         { timeout: 180_000, env: childEnv, maxBuffer: 1024 * 1024 },
       );
       const res = JSON.parse(stdout) as Record<string, unknown>;

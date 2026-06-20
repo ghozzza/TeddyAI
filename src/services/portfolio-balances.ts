@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { normalizeBscSymbol } from "@/lib/bsc-tokens";
 import type { Holding } from "@/types";
 
 const execFileAsync = promisify(execFile);
@@ -43,7 +44,7 @@ export async function getOnchainHoldings(): Promise<{ holdings: Holding[]; capit
       .map((h) => {
         // Reserve gas: subtract the buffer from the native token's tradeable value.
         const usdValue = h.type === "native" ? Math.max(0, h.usdValue - gasReserveUsd) : h.usdValue;
-        return { symbol: h.symbol.toUpperCase(), usdValue };
+        return { symbol: normalizeBscSymbol(h.symbol), usdValue };
       })
       .filter((h) => h.usdValue > 0);
 
