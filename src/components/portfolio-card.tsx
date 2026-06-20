@@ -10,7 +10,7 @@ import { cn, formatUsd } from "@/lib/utils";
 function StackedBar({ items }: { items: { symbol: string; weight: number }[] }) {
   const sorted = [...items].filter((i) => i.weight > 0).sort((a, b) => b.weight - a.weight);
   return (
-    <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
+    <div className="flex h-4 w-full overflow-hidden rounded-base border-2 border-border bg-muted">
       {sorted.map((i) => (
         <div
           key={i.symbol}
@@ -42,11 +42,11 @@ export function PortfolioCard({
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Current</p>
+          <p className="text-[11px] font-heading uppercase tracking-tight text-muted-foreground">Current</p>
           <StackedBar items={current.map((h) => ({ symbol: h.symbol, weight: h.weight }))} />
         </div>
         <div className="space-y-2">
-          <p className="text-xs font-medium text-primary">Recommended</p>
+          <p className="text-[11px] font-heading uppercase tracking-tight text-foreground">Recommended</p>
           <StackedBar items={target} />
         </div>
 
@@ -54,14 +54,14 @@ export function PortfolioCard({
           {actions.map((a) => (
             <div
               key={a.symbol}
-              className="flex items-center justify-between rounded-md border border-border/60 bg-background/40 px-3 py-2"
+              className="flex items-center justify-between rounded-base border-2 border-border bg-background px-3 py-2"
             >
               <div className="flex items-center gap-2">
                 <span
-                  className="h-2.5 w-2.5 rounded-full"
+                  className="size-2.5 rounded-full border border-border"
                   style={{ backgroundColor: assetColor(a.symbol) }}
                 />
-                <span className="font-medium">{a.symbol}</span>
+                <span className="font-heading">{a.symbol}</span>
                 <span className="hidden text-xs text-muted-foreground sm:inline">
                   {assetName(a.symbol)}
                 </span>
@@ -70,7 +70,7 @@ export function PortfolioCard({
                 <span className="flex items-center gap-1 tabular-nums text-muted-foreground">
                   {a.fromWeight}%
                   <ArrowRight className="h-3 w-3" />
-                  <span className="font-medium text-foreground">{a.toWeight}%</span>
+                  <span className="font-heading text-foreground">{a.toWeight}%</span>
                 </span>
                 <Badge tone={actionTone[a.action]} className="w-24 justify-center">
                   {a.action}
@@ -81,7 +81,7 @@ export function PortfolioCard({
           ))}
         </div>
         <p className={cn("text-right text-xs text-muted-foreground")}>
-          Total capital: <span className="font-medium text-foreground">{formatUsd(capital)}</span>
+          Total capital: <span className="font-heading text-foreground">{formatUsd(capital)}</span>
         </p>
       </CardContent>
     </Card>
