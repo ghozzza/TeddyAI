@@ -7,9 +7,9 @@ import type { AgentResult, RiskReport } from "@/types";
 import { cn } from "@/lib/utils";
 
 function scoreTone(score: number) {
-  if (score <= 3) return { color: "text-success", ring: "hsl(var(--success))", label: "Low" };
-  if (score <= 6) return { color: "text-warning", ring: "hsl(var(--warning))", label: "Moderate" };
-  return { color: "text-danger", ring: "hsl(var(--danger))", label: "High" };
+  if (score <= 3) return { color: "text-success", ring: "var(--success)", label: "Low" };
+  if (score <= 6) return { color: "text-warning", ring: "var(--warning)", label: "Moderate" };
+  return { color: "text-danger", ring: "var(--danger)", label: "High" };
 }
 
 const regimeTone = {
@@ -25,18 +25,18 @@ function Gauge({ score }: { score: number }) {
   return (
     <div className="flex items-center gap-4">
       <div
-        className="relative grid h-20 w-20 place-items-center rounded-full"
-        style={{ background: `conic-gradient(${t.ring} ${pct}%, hsl(var(--muted)) 0)` }}
+        className="relative grid h-20 w-20 place-items-center rounded-full border-2 border-border"
+        style={{ background: `conic-gradient(${t.ring} ${pct}%, var(--muted) 0)` }}
       >
-        <div className="grid h-[60px] w-[60px] place-items-center rounded-full bg-card">
-          <span className={cn("text-xl font-bold", t.color)}>{score}</span>
+        <div className="grid h-[58px] w-[58px] place-items-center rounded-full border-2 border-border bg-secondary-background">
+          <span className={cn("text-xl font-heading", t.color)}>{score}</span>
         </div>
       </div>
       <div>
-        <p className="text-xs text-muted-foreground">Risk Score</p>
-        <p className={cn("text-2xl font-bold", t.color)}>
+        <p className="text-[11px] font-heading uppercase tracking-tight text-muted-foreground">Risk Score</p>
+        <p className={cn("text-2xl font-heading", t.color)}>
           {score}
-          <span className="text-base font-normal text-muted-foreground">/10</span>
+          <span className="text-base font-base text-muted-foreground">/10</span>
         </p>
         <Badge tone={score <= 3 ? "success" : score <= 6 ? "warning" : "danger"}>{t.label} risk</Badge>
       </div>
@@ -55,18 +55,20 @@ export function RiskScoreCard({ result, risk }: { result: AgentResult; risk: Ris
         <div className="flex items-center justify-between">
           <Gauge score={result.riskScore} />
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">Diversification</p>
-            <p className="text-2xl font-bold">
+            <p className="text-[11px] font-heading uppercase tracking-tight text-muted-foreground">
+              Diversification
+            </p>
+            <p className="text-2xl font-heading">
               {risk.diversificationScore}
-              <span className="text-base font-normal text-muted-foreground">/10</span>
+              <span className="text-base font-base text-muted-foreground">/10</span>
             </p>
           </div>
         </div>
 
-        <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
-          <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-primary">
+        <div className="rounded-base border-2 border-border bg-main/10 p-3">
+          <div className="mb-1 flex items-center gap-1.5 text-xs font-heading uppercase tracking-tight">
             <Sparkles className="h-3.5 w-3.5" /> AI Reasoning
-            {result.isMock && <span className="text-muted-foreground">(rule-based)</span>}
+            {result.isMock && <span className="font-base text-muted-foreground">(rule-based)</span>}
           </div>
           <p className="text-sm leading-relaxed text-foreground/90">{result.reasoning}</p>
         </div>
