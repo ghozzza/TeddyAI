@@ -25,12 +25,18 @@ function parseInterval(s: string | undefined): number {
   return Math.max(5000, Number(m[1]) * mult);
 }
 
+const autoExecute = process.env.AGENT_AUTO_EXECUTE === "true";
 const CONFIG = {
   capital: Number(process.env.AGENT_CAPITAL || 10_000),
   risk: (process.env.AGENT_RISK || "moderate") as RiskProfile,
   intervalMs: parseInterval(process.env.AGENT_INTERVAL),
   driftThreshold: Number(process.env.AGENT_DRIFT_THRESHOLD ?? 5),
-  autoExecute: process.env.AGENT_AUTO_EXECUTE === "true",
+  autoExecute,
+  // Trade the wallet's real holdings. Defaults on when executing live; the
+  // configured AGENT_CAPITAL is the fallback (e.g. propose-only planning).
+  useRealBalances: process.env.AGENT_USE_REAL_BALANCES
+    ? process.env.AGENT_USE_REAL_BALANCES === "true"
+    : autoExecute,
   once: process.env.AGENT_ONCE === "true",
 };
 
@@ -43,6 +49,7 @@ async function tick(): Promise<void> {
     risk: CONFIG.risk,
     driftThreshold: CONFIG.driftThreshold,
     execute: CONFIG.autoExecute,
+    useRealBalances: CONFIG.useRealBalances,
   });
   await appendLog(toLogEntry(c));
 
@@ -54,7 +61,7 @@ async function tick(): Promise<void> {
       ? "PROPOSE (auto-exec off)"
       : "HOLD";
   console.log(
-    `[${c.ts}] ${c.result.marketRegime} · risk ${c.result.riskScore}/10 · drift ${c.drift.toFixed(1)}% · ${verb}`,
+    `[${c.ts}] $${c.capital} · ${c.result.marketRegime} · risk ${c.result.riskScore}/10 · drift ${c.drift.toFixed(1)}% · ${verb}`,
   );
 }
 

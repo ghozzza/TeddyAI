@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useHistory } from "@/hooks/use-history";
 import { assetColor } from "@/lib/assets";
-import { cn } from "@/lib/utils";
+import { cn, formatUsd } from "@/lib/utils";
 import type { AgentLogEntry } from "@/services/agent-log";
 
 const EXPLORER =
@@ -35,7 +35,8 @@ function Entry({ e }: { e: AgentLogEntry }) {
           <Badge>{e.marketRegime}</Badge>
         </span>
         <span className="text-[11px] uppercase tracking-tight text-muted-foreground">
-          {shortTime(e.ts)} · risk {e.riskScore}/10 · drift {e.drift.toFixed(0)}%
+          {shortTime(e.ts)} · {formatUsd(e.capital, { compact: true })} · risk {e.riskScore}/10 · drift{" "}
+          {e.drift.toFixed(0)}%
         </span>
       </div>
 

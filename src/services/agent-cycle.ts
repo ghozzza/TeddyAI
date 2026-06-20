@@ -3,6 +3,7 @@ import { generateAllocation } from "@/agents/investment-agent";
 import { assessRisk } from "@/services/risk-engine";
 import { buildActions, defaultCurrent } from "@/services/portfolio-engine";
 import { executeRebalance } from "@/services/wallet";
+import { getOnchainHoldings } from "@/services/portfolio-balances";
 import type {
   AgentResult,
   ExecuteResult,
@@ -64,11 +65,14 @@ export interface AgentCycleInput extends AnalysisInput {
   execute?: boolean;
   /** Only rebalance when drift ≥ this % (avoids churn/gas). Default 0. */
   driftThreshold?: number;
+  /** Use the wallet's real on-chain holdings as `current` (and its USD as capital). */
+  useRealBalances?: boolean;
   walletAddress?: string;
 }
 
 export interface AgentCycleResult extends AnalysisResult {
   ts: string;
+  capital: number;
   drift: number;
   shouldRebalance: boolean;
   executed: boolean;
@@ -77,7 +81,19 @@ export interface AgentCycleResult extends AnalysisResult {
 
 /** One autonomous decision: analyze, decide on drift, optionally execute. */
 export async function runAgentCycle(input: AgentCycleInput): Promise<AgentCycleResult> {
-  const analysis = await runAnalysis(input);
+  let capital = input.capital;
+  let current = input.current;
+
+  // Autonomous mode: rebalance the wallet's actual holdings, not an assumption.
+  if (input.useRealBalances) {
+    const onchain = await getOnchainHoldings();
+    if (onchain) {
+      capital = onchain.capital;
+      current = onchain.holdings;
+    }
+  }
+
+  const analysis = await runAnalysis({ ...input, capital, current });
   const drift = maxDrift(analysis.actions);
   const hasTrades = analysis.actions.some((a) => a.action !== "KEEP");
   const shouldRebalance = hasTrades && drift >= (input.driftThreshold ?? 0);
@@ -89,5 +105,5 @@ export async function runAgentCycle(input: AgentCycleInput): Promise<AgentCycleR
     executed = true;
   }
 
-  return { ...analysis, ts: new Date().toISOString(), drift, shouldRebalance, executed, execution };
+  return { ...analysis, ts: new Date().toISOString(), capital, drift, shouldRebalance, executed, execution };
 }

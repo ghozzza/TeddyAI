@@ -11,6 +11,8 @@ const LOG_PATH = process.env.AGENT_LOG_PATH || "data/agent-log.jsonl";
 
 export interface AgentLogEntry {
   ts: string;
+  /** Portfolio USD value the decision was made on (real holdings or configured). */
+  capital: number;
   marketRegime: string;
   riskScore: number;
   diversificationScore: number;
@@ -37,6 +39,7 @@ export function toLogEntry(c: AgentCycleResult): AgentLogEntry {
     : "propose";
   return {
     ts: c.ts,
+    capital: c.capital,
     marketRegime: c.result.marketRegime,
     riskScore: c.result.riskScore,
     diversificationScore: c.risk.diversificationScore,
