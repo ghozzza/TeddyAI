@@ -12,6 +12,7 @@ const execFileAsync = promisify(execFile);
 
 interface TwakHolding {
   symbol: string;
+  type: string;
   usdValue: number;
 }
 
@@ -25,6 +26,9 @@ export async function getOnchainHoldings(): Promise<{ holdings: Holding[]; capit
 
   const bin = process.env.TWAK_BIN || "twak";
   const chain = process.env.NEXT_PUBLIC_CHAIN === "bscTestnet" ? "bsc-testnet" : "bsc";
+  // Keep this much native (BNB) USD value untouched so the agent can never sell
+  // the gas it needs to keep trading. Default $1.
+  const gasReserveUsd = Number(process.env.AGENT_GAS_RESERVE_USD ?? 1);
 
   try {
     const { stdout } = await execFileAsync(
@@ -36,7 +40,12 @@ export async function getOnchainHoldings(): Promise<{ holdings: Holding[]; capit
 
     const items = raw
       .filter((h) => h && typeof h.usdValue === "number" && h.usdValue > 0)
-      .map((h) => ({ symbol: h.symbol.toUpperCase(), usdValue: h.usdValue }));
+      .map((h) => {
+        // Reserve gas: subtract the buffer from the native token's tradeable value.
+        const usdValue = h.type === "native" ? Math.max(0, h.usdValue - gasReserveUsd) : h.usdValue;
+        return { symbol: h.symbol.toUpperCase(), usdValue };
+      })
+      .filter((h) => h.usdValue > 0);
 
     const capital = round2(items.reduce((s, h) => s + h.usdValue, 0));
     if (capital <= 0) return null;
