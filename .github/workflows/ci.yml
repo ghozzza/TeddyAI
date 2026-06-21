@@ -29,3 +29,38 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  # Continuous deploy: ships main to the VPS after CI passes. Skipped on PRs
+  # (so fork PRs never touch the box or see the secrets). The agent's wallet
+  # (~/.twak) and .env live only on the box and are never overwritten — a
+  # `git reset --hard` only touches tracked files (both are gitignored).
+  deploy:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - name: Deploy to VPS over SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "$VPS_USER@$VPS_HOST" "
+            set -euo pipefail
+            cd \$HOME/PekkaAI
+            git fetch --prune origin main
+            git reset --hard origin/main
+            export PATH=\$HOME/.npm-global/bin:/usr/local/bin:\$PATH
+            pnpm install --frozen-lockfile
+            pnpm build
+            pm2 restart pekka-web pekka-worker --update-env
+            pm2 save
+            echo '── deployed' \$(git rev-parse --short HEAD)
+          "
