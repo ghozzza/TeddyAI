@@ -11,4 +11,8 @@ export const queryKeys = {
     all: ["history"] as const,
     list: (limit: number) => ["history", "list", limit] as const,
   },
+  performance: {
+    all: ["performance"] as const,
+    latest: () => ["performance", "latest"] as const,
+  },
 } as const;

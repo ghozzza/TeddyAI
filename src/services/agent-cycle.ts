@@ -76,6 +76,8 @@ export interface AgentCycleResult extends AnalysisResult {
   drift: number;
   shouldRebalance: boolean;
   executed: boolean;
+  /** `capital`/`current` came from the wallet's real on-chain holdings (not a sim). */
+  realBalances: boolean;
   execution?: ExecuteResult;
 }
 
@@ -105,5 +107,14 @@ export async function runAgentCycle(input: AgentCycleInput): Promise<AgentCycleR
     executed = true;
   }
 
-  return { ...analysis, ts: new Date().toISOString(), capital, drift, shouldRebalance, executed, execution };
+  return {
+    ...analysis,
+    ts: new Date().toISOString(),
+    capital,
+    drift,
+    shouldRebalance,
+    executed,
+    realBalances: !!input.useRealBalances,
+    execution,
+  };
 }

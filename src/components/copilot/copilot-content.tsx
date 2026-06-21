@@ -7,6 +7,7 @@ import { ChatPanel } from "@/components/copilot/chat-panel";
 import { RiskScoreCard } from "@/components/copilot/risk-score-card";
 import { PortfolioCard } from "@/components/copilot/portfolio-card";
 import { ExecuteButton } from "@/components/copilot/execute-button";
+import { WalletPerformanceCard } from "@/components/copilot/wallet-performance-card";
 import { AgentActivity } from "@/components/copilot/agent-activity";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCopilot } from "@/hooks/use-copilot";
@@ -54,7 +55,7 @@ export function CopilotContent() {
           />
         </div>
 
-        <div id="portfolio" className="space-y-6 scroll-mt-6">
+        <div className="space-y-6">
           {c.analysis ? (
             <>
               <RiskScoreCard result={c.analysis.result} risk={c.analysis.risk} />
@@ -85,6 +86,11 @@ export function CopilotContent() {
           )}
         </div>
       </div>
+
+      {/* live wallet performance (autonomous agent's real PnL) */}
+      <section id="portfolio" className="mt-6 scroll-mt-6">
+        <WalletPerformanceCard />
+      </section>
 
       {/* autonomous agent decision log */}
       <section className="mt-6">

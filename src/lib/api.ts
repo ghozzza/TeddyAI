@@ -8,6 +8,7 @@ import type {
   RiskReport,
 } from "@/types";
 import type { AgentLogEntry } from "@/services/agent-log";
+import type { WalletPerformance } from "@/lib/performance";
 
 export interface AnalyzeResponse {
   result: AgentResult;
@@ -46,4 +47,11 @@ export async function fetchHistory(limit = 20): Promise<AgentLogEntry[]> {
   if (!res.ok) throw new Error("Failed to load agent history");
   const json = (await res.json()) as { entries: AgentLogEntry[] };
   return json.entries;
+}
+
+export async function fetchPerformance(): Promise<WalletPerformance | null> {
+  const res = await fetch("/api/performance");
+  if (!res.ok) throw new Error("Failed to load wallet performance");
+  const json = (await res.json()) as { performance: WalletPerformance | null };
+  return json.performance;
 }

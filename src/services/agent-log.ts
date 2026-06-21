@@ -24,6 +24,8 @@ export interface AgentLogEntry {
   drift: number;
   shouldRebalance: boolean;
   executed: boolean;
+  /** Decision was made on the wallet's real on-chain holdings (drives the perf curve). */
+  realBalances: boolean;
   /** "propose" (not executed), or how it executed when it did. */
   mode: "live" | "simulated" | "propose";
   actions: { action: string; symbol: string; fromWeight: number; toWeight: number; deltaUsd: number }[];
@@ -49,6 +51,7 @@ export function toLogEntry(c: AgentCycleResult): AgentLogEntry {
     drift: c.drift,
     shouldRebalance: c.shouldRebalance,
     executed: c.executed,
+    realBalances: c.realBalances,
     mode,
     actions: c.actions.map((a) => ({
       action: a.action,
