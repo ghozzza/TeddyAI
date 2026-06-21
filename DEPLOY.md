@@ -1,11 +1,11 @@
-# Deploy PekkaAI to a VPS
+# Deploy TeddyAI to a VPS
 
 The agent (`twak` CLI + encrypted wallet) is **stateful and local**, so it runs on a
 persistent box — a VPS/EC2, not serverless. Web app + autonomous worker run side by side.
 
 > **Currently deployed:** EC2 `ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com`
 > (`52.77.150.79`, Singapore). The box co-hosts the WallCup apps on `:3000`/`:3001`, so
-> **PekkaAI web runs on `:3002`** (`PEKKA_PORT`). Pushes to `main` auto-deploy via
+> **TeddyAI web runs on `:3002`** (`TEDDY_PORT`). Pushes to `main` auto-deploy via
 > GitHub Actions (see [CI/CD](#7-cicd-automatic) below) — the steps below are the manual
 > first-time bring-up.
 
@@ -21,7 +21,7 @@ In the EC2 console, confirm:
 
 ```bash
 ssh -i draft/deployment.pem ubuntu@ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com
-git clone https://github.com/ghozzza/PekkaAI.git PekkaAI && cd PekkaAI
+git clone https://github.com/ghozzza/TeddyAI.git TeddyAI && cd TeddyAI
 ```
 
 ## 2. Install + build
@@ -46,7 +46,7 @@ so copy the encrypted wallet dir and the env across instead of recreating it:
 ```bash
 # run on your Mac, in the repo dir
 HOST=ubuntu@ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com
-scp -i draft/deployment.pem .env "$HOST:~/PekkaAI/.env"
+scp -i draft/deployment.pem .env "$HOST:~/TeddyAI/.env"
 scp -i draft/deployment.pem -r ~/.twak "$HOST:~/.twak"
 ```
 
@@ -61,7 +61,7 @@ sed -i 's/^AGENT_AUTO_EXECUTE=.*/AGENT_AUTO_EXECUTE=true/' .env
 ## 4. Run (PM2, survives reboot)
 
 ```bash
-pm2 start deploy/ecosystem.config.cjs   # pekka-web + pekka-worker
+pm2 start deploy/ecosystem.config.cjs   # teddy-web + teddy-worker
 pm2 save
 pm2 startup                              # follow the printed sudo command
 pm2 logs                                 # watch the agent
@@ -98,4 +98,4 @@ overwritten. The repo must be reachable by the box (it clones over public https)
 - **Security**: dedicated throwaway wallet, minimal funds. `chmod 600 .env`. SSH key-only.
 - **Knobs** (`.env`): `AGENT_INTERVAL`, `AGENT_DRIFT_THRESHOLD`, `AGENT_GAS_RESERVE_USD`, `AGENT_RISK`.
 - **Update**: just push to `main` — CI/CD redeploys (§7). Manual fallback:
-  `git fetch && git reset --hard origin/main && pnpm install && pnpm build && pm2 restart pekka-web pekka-worker`.
+  `git fetch && git reset --hard origin/main && pnpm install && pnpm build && pm2 restart teddy-web teddy-worker`.

@@ -46,7 +46,7 @@ export function ChatPanel({
           <Sparkles className="h-4 w-4" />
         </div>
         <div>
-          <p className="text-sm font-heading uppercase tracking-tight leading-none">Pekka AI</p>
+          <p className="text-sm font-heading uppercase tracking-tight leading-none">Teddy AI</p>
           <p className="text-[11px] uppercase tracking-tight text-muted-foreground">
             Investment Copilot · BNB Chain
           </p>
@@ -58,7 +58,7 @@ export function ChatPanel({
         {messages.length === 0 && (
           <div className="grid h-full place-items-center text-center text-sm text-muted-foreground">
             <div className="max-w-xs space-y-2">
-              <p className="font-heading uppercase tracking-tight text-foreground">Tell Pekka your plan</p>
+              <p className="font-heading uppercase tracking-tight text-foreground">Tell Teddy your plan</p>
               <p>
                 Set your capital and risk profile, then ask for an allocation. e.g.{" "}
                 <span className="text-foreground">&ldquo;I have $10,000 with moderate risk.&rdquo;</span>

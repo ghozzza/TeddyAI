@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# PekkaAI — one-shot VPS setup (Ubuntu/Debian). Run ON the VPS after SSH.
+# TeddyAI — one-shot VPS setup (Ubuntu/Debian). Run ON the VPS after SSH.
 #   bash deploy/setup.sh
 # Assumes the repo is already cloned and you're in its root.
 set -euo pipefail
 
-echo "── PekkaAI VPS setup ──"
+echo "── TeddyAI VPS setup ──"
 
 # 1. Node 22+ via nvm (twak requires >= 22.14)
 if ! command -v node >/dev/null 2>&1 || [ "$(node -v | sed 's/v//;s/\..*//')" -lt 22 ]; then

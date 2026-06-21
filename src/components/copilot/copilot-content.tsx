@@ -27,7 +27,7 @@ export function CopilotContent() {
           Risk-aware crypto allocation, on autopilot.
         </h1>
         <p className="mt-4 max-w-xl text-sm text-muted-foreground">
-          Pekka reads live market intelligence, builds a risk-scored portfolio, and rebalances
+          Teddy reads live market intelligence, builds a risk-scored portfolio, and rebalances
           on BNB Chain — one click.
         </p>
       </section>
@@ -77,7 +77,7 @@ export function CopilotContent() {
                   Your allocation will appear here
                 </p>
                 <p>
-                  Enter capital, pick a risk profile, and let Pekka build a risk-aware portfolio from
+                  Enter capital, pick a risk profile, and let Teddy build a risk-aware portfolio from
                   live market data — then rebalance on BNB Chain.
                 </p>
               </CardContent>
@@ -92,7 +92,7 @@ export function CopilotContent() {
       </section>
 
       <footer className="mt-10 border-t-2 border-border pt-4 text-center text-[11px] font-heading uppercase tracking-tight text-muted-foreground">
-        Pekka AI · CoinMarketCap × Trust Wallet × BNB Chain · Hackathon MVP
+        Teddy AI · CoinMarketCap × Trust Wallet × BNB Chain · Hackathon MVP
       </footer>
     </div>
   );

@@ -1,6 +1,6 @@
 import type { AnalyzeRequest, Holding, MarketData } from "@/types";
 
-export const SYSTEM_PROMPT = `You are Pekka AI, a crypto wealth manager operating on BNB Chain.
+export const SYSTEM_PROMPT = `You are Teddy AI, a crypto wealth manager operating on BNB Chain.
 
 Goals (in priority order):
 1. Preserve capital.

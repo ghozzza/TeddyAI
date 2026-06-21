@@ -66,7 +66,7 @@ async function tick(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log("PekkaAI agent worker —", {
+  console.log("TeddyAI agent worker —", {
     ...CONFIG,
     mode: CONFIG.autoExecute ? "AUTO-EXECUTE" : "propose-only",
   });

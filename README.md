@@ -1,4 +1,4 @@
-# Pekka AI — Investment Copilot
+# Teddy AI — Investment Copilot
 
 AI investment copilot on **BNB Chain**. Reads live market data from **CoinMarketCap**, builds a risk‑aware portfolio allocation from your capital + risk profile, explains the reasoning, and rebalances via the **Trust Wallet Agent Kit**.
 
@@ -122,7 +122,7 @@ Execution runs in two modes (`WALLET_EXECUTION_MODE`): **`simulated`** (default 
 ## Demo script
 
 1. Capital `$10,000`, risk **Moderate**, hit send.
-2. Pekka returns **Bullish · 6/10** → BTC 40 / ETH 30 / BNB 20 / USDT 10 with reasoning.
+2. Teddy returns **Bullish · 6/10** → BTC 40 / ETH 30 / BNB 20 / USDT 10 with reasoning.
 3. Portfolio card shows USDT 100% → recommended, with BUY/SELL actions.
 4. Click **Rebalance Portfolio** → swaps execute on BNB Chain (simulated by default; real via the Trust Wallet Agent Kit in `live` mode).
 5. Or let it run itself: `pnpm worker` (autonomous loop — reads live holdings, rebalances on drift, logs reasoning to the Agent Activity panel).

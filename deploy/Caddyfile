@@ -1,6 +1,6 @@
 # Optional HTTPS reverse proxy. Replace the domain, then:
 #   sudo caddy run --config deploy/Caddyfile     (or install as a service)
 # Caddy fetches/renews TLS certs automatically.
-pekka.example.com {
+teddy.example.com {
 	reverse_proxy localhost:3000
 }

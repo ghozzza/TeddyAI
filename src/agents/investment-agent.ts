@@ -85,7 +85,7 @@ export async function generateAllocation(
       apiKey,
       baseURL: OPENROUTER_BASE_URL,
       // Optional OpenRouter attribution headers.
-      defaultHeaders: { "X-Title": "PekkaAI", "HTTP-Referer": "https://github.com/ghozzza/PekkaAI" },
+      defaultHeaders: { "X-Title": "TeddyAI", "HTTP-Referer": "https://github.com/ghozzza/TeddyAI" },
     });
     const completion = await client.chat.completions.create({
       model: MODEL,

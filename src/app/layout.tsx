@@ -10,7 +10,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pekka AI — Investment Copilot",
+  title: "Teddy AI — Investment Copilot",
   description: "AI investment copilot on BNB Chain. Market intelligence, risk-aware allocation, one-click rebalance.",
 };
 

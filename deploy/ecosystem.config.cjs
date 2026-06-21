@@ -7,18 +7,18 @@ const cwd = path.resolve(__dirname, "..");
 module.exports = {
   apps: [
     {
-      name: "pekka-web",
+      name: "teddy-web",
       cwd,
       script: "pnpm",
       args: "start",
       interpreter: "none",
       // 3000/3001 are taken by the co-located WallCup apps on this box.
-      env: { PORT: process.env.PEKKA_PORT || "3002" },
+      env: { PORT: process.env.TEDDY_PORT || "3002" },
       autorestart: true,
       max_restarts: 10,
     },
     {
-      name: "pekka-worker",
+      name: "teddy-worker",
       cwd,
       script: "pnpm",
       args: "worker",

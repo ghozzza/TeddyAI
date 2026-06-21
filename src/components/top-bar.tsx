@@ -20,7 +20,7 @@ export function TopBar({ actions }: { actions?: ReactNode }) {
           <span className="grid size-10 shrink-0 place-items-center rounded-base border-2 border-border bg-main text-main-foreground shadow-shadow">
             <TrendingUp className="h-5 w-5" />
           </span>
-          <span className="text-xl font-heading uppercase tracking-tight">Pekka AI</span>
+          <span className="text-xl font-heading uppercase tracking-tight">Teddy AI</span>
         </div>
         <nav className="flex flex-wrap items-center gap-2">
           {NAV_ITEMS.map((item) => (

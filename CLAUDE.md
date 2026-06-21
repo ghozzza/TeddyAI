@@ -1,4 +1,4 @@
-# PekkaAI — Project Guide
+# TeddyAI — Project Guide
 
 AI investment copilot on **BNB Chain** (hackathon MVP: CoinMarketCap × Trust Wallet × BNB Chain).
 Next.js 15 (App Router) · React 19 · TypeScript · Tailwind v3 · wagmi/viem · TanStack Query · OpenAI.
@@ -102,7 +102,7 @@ proven on-chain, registered for the hackathon). Remaining is operational, not co
    needs more USDT (to trade) + BNB (gas) before the trading window. Ask draft in
    `draft/chat-minta-funds-mas-fandi.md`.
 3. **Run live during the trading window** (deadline Jun 25): on the VPS set `AGENT_AUTO_EXECUTE=true`
-   and `pm2 restart pekka-worker --update-env` (useRealBalances auto-follows). Currently off (safe).
+   and `pm2 restart teddy-worker --update-env` (useRealBalances auto-follows). Currently off (safe).
 4. **Submit BUIDL on DoraHacks** — the user wants this last, once everything works.
 
 Minor: `ox`/`viem` build warning via wagmi (harmless); recharts adds ~125 kB to `/` first-load.
