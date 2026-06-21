@@ -63,7 +63,15 @@ function buildSwapPlan(trades: PortfolioAction[]): SwapIntent[] {
 export async function executeRebalance(
   actions: PortfolioAction[],
   walletAddress?: string,
+  opts?: { forceSimulated?: boolean },
 ): Promise<ExecuteResult> {
+  // `forceSimulated` lets the HTTP layer refuse real spends for unauthenticated
+  // callers (the box's port may be public so Vercel can read its data). The
+  // autonomous worker calls this directly without the flag, so it still trades.
+  if (opts?.forceSimulated) {
+    return executeSimulated(actions, walletAddress, "Live execution requires authorization on this endpoint; showing a simulated result.");
+  }
+
   if (resolveMode() === "live") {
     try {
       return await executeLive(actions);
