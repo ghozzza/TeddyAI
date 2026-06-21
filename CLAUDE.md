@@ -91,16 +91,18 @@ adding code:
 
 ## Status & follow-ups (handoff)
 
-Code is **done & deploy-ready** (UI, CMC/AI/risk live, autonomous worker, live twak execution
+Code is **done & deployed** (UI, CMC/AI/risk live, autonomous worker, live twak execution
 proven on-chain, registered for the hackathon). Remaining is operational, not code:
 
-1. **Deploy to VPS** — artifacts ready (`deploy/`, `DEPLOY.md`). **Blocked**: the EC2
-   (`13.215.175.99`) is unreachable — ports 22/443/3000 time out from egress `182.253.8.82`
-   (instance stopped or security group not allowing it). Re-test SSH once devops fixes it.
-2. **Top up the agent wallet** `0x8726894b84b4c3c7CDDa3b75804EF9698e79440F` — only ~$0.58 in it;
+1. ✅ **Deployed to VPS** (2026-06-21) — EC2 `ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com`
+   (`52.77.150.79`). Web on `:3002` (`:3000`/`:3001` are the co-hosted WallCup apps), worker
+   propose-only, PM2 + systemd survive reboot. **CI/CD**: push to `main` auto-deploys via
+   `.github/workflows/ci.yml` — needs repo secrets `VPS_SSH_KEY`/`VPS_HOST`/`VPS_USER`. See `DEPLOY.md`.
+2. **Top up the agent wallet** `0x8726894b84b4c3c7CDDa3b75804EF9698e79440F` — only ~$0.53 on the box;
    needs more USDT (to trade) + BNB (gas) before the trading window. Ask draft in
    `draft/chat-minta-funds-mas-fandi.md`.
-3. **Run live during the trading window** (Jun 22-28): `AGENT_AUTO_EXECUTE=true`, worker alive on the VPS.
+3. **Run live during the trading window** (deadline Jun 25): on the VPS set `AGENT_AUTO_EXECUTE=true`
+   and `pm2 restart pekka-worker --update-env` (useRealBalances auto-follows). Currently off (safe).
 4. **Submit BUIDL on DoraHacks** — the user wants this last, once everything works.
 
 Minor: `ox`/`viem` build warning via wagmi (harmless); recharts adds ~125 kB to `/` first-load.
