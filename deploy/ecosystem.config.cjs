@@ -12,7 +12,8 @@ module.exports = {
       script: "pnpm",
       args: "start",
       interpreter: "none",
-      env: { PORT: "3000" },
+      // 3000/3001 are taken by the co-located WallCup apps on this box.
+      env: { PORT: process.env.PEKKA_PORT || "3002" },
       autorestart: true,
       max_restarts: 10,
     },
