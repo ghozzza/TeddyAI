@@ -40,7 +40,6 @@ Add keys in `.env.local` to go live:
 | `NEXT_PUBLIC_WC_PROJECT_ID` | WalletConnect connector | Injected (MetaMask) only |
 | `NEXT_PUBLIC_CHAIN` | `bsc` (mainnet) or `bscTestnet` | `bsc` |
 | `WALLET_EXECUTION_MODE` | `live` for real swaps | `simulated` |
-| `TRUSTWALLET_PRIVATE_KEY` | Executing wallet (live mode, server‑side) | — |
 
 ## Develop
 
