@@ -7,9 +7,9 @@ import { ConnectButton } from "./connect-button";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV_ITEMS = [
-  { label: "Copilot", active: true },
-  { label: "Markets", active: false },
-  { label: "Portfolio", active: false },
+  { label: "Copilot", href: "#copilot", active: true },
+  { label: "Markets", href: "#markets", active: false },
+  { label: "Portfolio", href: "#portfolio", active: false },
 ];
 
 export function TopBar({ actions }: { actions?: ReactNode }) {
@@ -24,16 +24,17 @@ export function TopBar({ actions }: { actions?: ReactNode }) {
         </div>
         <nav className="flex flex-wrap items-center gap-2">
           {NAV_ITEMS.map((item) => (
-            <span
+            <a
               key={item.label}
+              href={item.href}
               aria-current={item.active ? "page" : undefined}
               className={cn(
-                "rounded-base border-2 border-border px-3 py-1.5 text-sm font-heading uppercase tracking-tight shadow-shadow",
+                "rounded-base border-2 border-border px-3 py-1.5 text-sm font-heading uppercase tracking-tight shadow-shadow transition-colors hover:bg-main hover:text-main-foreground",
                 item.active ? "bg-main text-main-foreground" : "bg-secondary-background text-muted-foreground",
               )}
             >
               {item.label}
-            </span>
+            </a>
           ))}
         </nav>
       </div>

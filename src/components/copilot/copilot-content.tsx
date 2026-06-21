@@ -33,13 +33,13 @@ export function CopilotContent() {
       </section>
 
       {/* market */}
-      <section className="mb-6 space-y-3">
+      <section id="markets" className="mb-6 space-y-3 scroll-mt-6">
         <MarketOverviewCard />
         <TopGainers />
       </section>
 
       {/* main grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div id="copilot" className="grid gap-6 scroll-mt-6 lg:grid-cols-2">
         <div className="h-[560px]">
           <ChatPanel
             messages={c.messages}
@@ -54,7 +54,7 @@ export function CopilotContent() {
           />
         </div>
 
-        <div className="space-y-6">
+        <div id="portfolio" className="space-y-6 scroll-mt-6">
           {c.analysis ? (
             <>
               <RiskScoreCard result={c.analysis.result} risk={c.analysis.risk} />

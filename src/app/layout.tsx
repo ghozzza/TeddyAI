@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={mono.variable} suppressHydrationWarning>
+    <html lang="en" className={`${mono.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <Providers>{children}</Providers>
       </body>
