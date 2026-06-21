@@ -3,8 +3,8 @@
 The agent (`twak` CLI + encrypted wallet) is **stateful and local**, so it runs on a
 persistent box — a VPS/EC2, not serverless. Web app + autonomous worker run side by side.
 
-> **Currently deployed:** EC2 `ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com`
-> (`52.77.150.79`, Singapore). The box co-hosts the WallCup apps on `:3000`/`:3001`, so
+> **Currently deployed:** EC2 `YOUR_EC2_HOST`
+> (`YOUR_INSTANCE_IP`, Singapore). The box co-hosts the WallCup apps on `:3000`/`:3001`, so
 > **TeddyAI web runs on `:3002`** (`TEDDY_PORT`). Pushes to `main` auto-deploy via
 > GitHub Actions (see [CI/CD](#7-cicd-automatic) below) — the steps below are the manual
 > first-time bring-up.
@@ -20,7 +20,7 @@ In the EC2 console, confirm:
 ## 1. Connect + clone
 
 ```bash
-ssh -i draft/deployment.pem ubuntu@ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com
+ssh -i draft/deployment.pem ubuntu@YOUR_EC2_HOST
 git clone https://github.com/ghozzza/TeddyAI.git TeddyAI && cd TeddyAI
 ```
 
@@ -40,12 +40,12 @@ bash deploy/setup.sh        # Node 22, pnpm, twak, PM2, then build
 
 ## 3. Bring the wallet + secrets over (from your Mac)
 
-`twak` has no wallet export/import, and the wallet `0x8726…` is already **registered + funded**,
+`twak` has no wallet export/import, and the agent wallet is already **registered + funded**,
 so copy the encrypted wallet dir and the env across instead of recreating it:
 
 ```bash
 # run on your Mac, in the repo dir
-HOST=ubuntu@ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com
+HOST=ubuntu@YOUR_EC2_HOST
 scp -i draft/deployment.pem .env "$HOST:~/TeddyAI/.env"
 scp -i draft/deployment.pem -r ~/.twak "$HOST:~/.twak"
 ```
@@ -87,7 +87,7 @@ Otherwise reach the app at `http://<instance-ip>:3002` (open port 3002 in the se
 reinstalls, builds, and `pm2 restart`s the web + worker. Add three repo **secrets** for it:
 
 - `VPS_SSH_KEY` — full contents of `draft/deployment.pem`
-- `VPS_HOST` — `ec2-52-77-150-79.ap-southeast-1.compute.amazonaws.com`
+- `VPS_HOST` — `YOUR_EC2_HOST`
 - `VPS_USER` — `ubuntu`
 
 `git reset --hard` only touches tracked files, so `.env` and `~/.twak` on the box are never
