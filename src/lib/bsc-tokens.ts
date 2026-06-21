@@ -17,6 +17,14 @@ const SYMBOL_TO_CONTRACT: Record<string, string> = {
   USDT: "0x55d398326f99059fF775485246999027B3197955",
 };
 
+/**
+ * Agent symbol → canonical BSC contract address. Every token here is 18-decimals
+ * (Binance-peg assets + BSC stables), which the balance reader relies on. twak's
+ * `wallet portfolio` only reports a curated subset (it omits BTCB), so the reader
+ * reads the rest straight from the contract. Only add 18-decimal tokens here.
+ */
+export const BSC_TOKEN_CONTRACTS: Readonly<Record<string, string>> = SYMBOL_TO_CONTRACT;
+
 // twak reports pegged tokens under these symbols; map back to our universe.
 const CONTRACT_SYMBOL_ALIASES: Record<string, string> = {
   BTCB: "BTC",

@@ -7,6 +7,13 @@ const API_KEY = process.env.CMC_API_KEY || "";
 let cache: { data: MarketData; expires: number } | null = null;
 const TTL_MS = 60_000;
 
+// Spot-price helpers (used by the on-chain balance reader to value holdings).
+const STABLECOINS = new Set(["USDT", "USDC", "DAI", "BUSD", "FDUSD"]);
+const MOCK_PRICES: Record<string, number> = {
+  BTC: 67450, ETH: 3520, BNB: 612.4, SOL: 168.2, USDT: 1, USDC: 1,
+};
+let priceCache: { data: Record<string, number>; expires: number } | null = null;
+
 function fearGreedLabel(value: number): string {
   if (value <= 24) return "Extreme Fear";
   if (value <= 44) return "Fear";
@@ -94,7 +101,45 @@ export async function getMarketData(): Promise<MarketData> {
   }
 }
 
+/**
+ * USD spot prices for the given symbols, cached for the TTL. Stablecoins are
+ * pinned to $1; anything CMC can't price (or when there's no API key) falls back
+ * to deterministic mock prices so callers never see NaN.
+ */
+export async function getPrices(symbols: string[]): Promise<Record<string, number>> {
+  const want = Array.from(new Set(symbols.map((s) => s.toUpperCase())));
+  if (priceCache && priceCache.expires > Date.now() && want.every((s) => s in priceCache!.data)) {
+    return priceCache.data;
+  }
+
+  const out: Record<string, number> = {};
+  for (const s of want) if (STABLECOINS.has(s)) out[s] = 1;
+  const need = want.filter((s) => !(s in out));
+
+  if (API_KEY && need.length) {
+    try {
+      const resp = await cmcFetch<PriceResp>(
+        `/v2/cryptocurrency/quotes/latest?symbol=${need.join(",")}`,
+      );
+      for (const s of need) {
+        const price = resp.data?.[s]?.[0]?.quote?.USD?.price;
+        if (typeof price === "number" && price > 0) out[s] = price;
+      }
+    } catch (err) {
+      console.error("[cmc] getPrices fell back to mock:", err);
+    }
+  }
+  // Deterministic backfill for anything still unpriced.
+  for (const s of need) if (!(s in out)) out[s] = MOCK_PRICES[s] ?? 0;
+
+  priceCache = { data: out, expires: Date.now() + TTL_MS };
+  return out;
+}
+
 // ---- CMC response shapes (only the fields we use) ----
+interface PriceResp {
+  data: Record<string, { quote: { USD: { price: number } } }[]>;
+}
 interface GlobalResp {
   data: {
     btc_dominance: number;
